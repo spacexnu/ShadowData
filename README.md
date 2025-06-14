@@ -1,5 +1,5 @@
-![Build Status](https://github.com/adlermedrado/ShadowData/actions/workflows/main.yml/badge.svg)
-[![codecov](https://codecov.io/gh/adlermedrado/ShadowData/branch/main/graph/badge.svg)](https://codecov.io/gh/your-username/your-repo)
+![Build Status](https://github.com/spacexnu/ShadowData/actions/workflows/main.yml/badge.svg)
+[![codecov](https://codecov.io/gh/spacexnu/ShadowData/branch/main/graph/badge.svg)](https://codecov.io/gh/your-username/your-repo)
 
 
 # ShadowData - A sensitive data handler python library
