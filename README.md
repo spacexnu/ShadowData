@@ -1,5 +1,4 @@
 ![Build Status](https://github.com/spacexnu/ShadowData/actions/workflows/main.yml/badge.svg)
-[![codecov](https://codecov.io/gh/spacexnu/ShadowData/branch/main/graph/badge.svg)](https://codecov.io/gh/spacexnu/ShadowData)
 
 
 # ShadowData - A sensitive data handler python library
