@@ -5,7 +5,7 @@ such as IP addresses, email addresses, and phone numbers.
 """
 
 import re
-from typing import List, Match, Optional, Pattern
+from typing import List, Pattern
 
 from shadow_data.exceptions import InvalidEmailError
 
