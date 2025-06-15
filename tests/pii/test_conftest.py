@@ -1,6 +1,4 @@
-import pytest
 from unittest.mock import patch, MagicMock
-import importlib.util
 from tests.pii.conftest import is_module_available, pytest_collection_modifyitems
 
 

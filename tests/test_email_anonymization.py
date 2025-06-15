@@ -1,5 +1,4 @@
 import pytest
-from unittest.mock import patch, MagicMock
 
 from shadow_data.anonymization import EmailAnonymization
 from shadow_data.exceptions import InvalidEmailError
