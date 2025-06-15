@@ -10,7 +10,7 @@ license = "MIT"
 python = "^3.12"
 
 spacy = { version = "^3.8", optional = true, markers = "platform_system == 'Darwin' and platform_machine == 'arm64' or platform_system == 'Darwin' and platform_machine == 'x86_64' or platform_system == 'Linux' or platform_system == 'Windows'" }
-cryptography = "^43.0.1"
+cryptography = "^44.0.3"
 
 [tool.poetry.extras]
 spacy = ["spacy"]
