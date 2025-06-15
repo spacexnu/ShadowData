@@ -23,3 +23,18 @@ class TestPhoneNumberAnonymization:
     )
     def test_anonymize_phone_number(self, phone, expected):
         assert PhoneNumberAnonymization.anonymize_phone_number(phone) == expected
+
+    def test_anonymize_phone_number_exactly_4_digits(self):
+        phone = '1234'
+        expected = '1234'
+        assert PhoneNumberAnonymization.anonymize_phone_number(phone) == expected
+
+    def test_anonymize_phone_number_fewer_than_4_digits(self):
+        phone = '123'
+        expected = '123'
+        assert PhoneNumberAnonymization.anonymize_phone_number(phone) == expected
+
+    def test_anonymize_phone_number_no_digits(self):
+        phone = '(+) -'
+        expected = '(+) -'
+        assert PhoneNumberAnonymization.anonymize_phone_number(phone) == expected

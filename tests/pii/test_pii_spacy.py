@@ -1,6 +1,7 @@
 import pytest
 from unittest.mock import patch, MagicMock
 
+pytest.importorskip('spacy')  # Skip this test if spacy is not installed
 from spacy import Language
 
 from shadow_data.pii.enums import ModelLang, ModelCore, ModelSize

@@ -25,3 +25,10 @@ class TestIpv4Anonymization:
         expected_output = text
 
         assert Ipv4Anonymization.anonymize_ipv4(text) == expected_output
+
+    def test_anonymize_ipv4_custom_pattern(self):
+        text = 'The IP is 192.168.1.100.'
+        custom_pattern = r'\1-YYY-YYY-YYY'
+        expected_output = 'The IP is 192-YYY-YYY-YYY.'
+
+        assert Ipv4Anonymization.anonymize_ipv4(text, custom_pattern) == expected_output

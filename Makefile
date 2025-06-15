@@ -5,9 +5,11 @@ help:
 	@echo "help: Show this help"
 
 test:
+	poetry install --extras spacy
 	poetry run pytest -vvv
 
 coverage:
+	poetry install --extras spacy
 	poetry run pytest -vvv --cov
 
 format:
