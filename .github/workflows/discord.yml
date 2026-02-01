@@ -1,0 +1,51 @@
+name: Discord Notify
+
+on:
+  pull_request:
+    types: [opened, closed]
+  release:
+    types: [published]
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send notification to Discord
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          EVENT_NAME: ${{ github.event_name }}
+          ACTION: ${{ github.event.action }}
+          REPO: ${{ github.repository }}
+          ACTOR: ${{ github.actor }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          RELEASE_URL: ${{ github.event.release.html_url }}
+          MERGED: ${{ github.event.pull_request.merged }}
+        run: |
+          MESSAGE=""
+
+          if [ "$EVENT_NAME" = "pull_request" ] && [ "$ACTION" = "opened" ]; then
+            MESSAGE="📝 **Pull Request opened**\n\
+            Repository: **$REPO**\n\
+            Author: **$ACTOR**\n\
+            Review here: $PR_URL"
+          fi
+
+          if [ "$EVENT_NAME" = "pull_request" ] && [ "$ACTION" = "closed" ] && [ "$MERGED" = "true" ]; then
+            MESSAGE="✅ **Pull Request merged**\n\
+            Repository: **$REPO**\n\
+            Merged by: **$ACTOR**\n\
+            PR: $PR_URL"
+          fi
+
+          if [ "$EVENT_NAME" = "release" ]; then
+            MESSAGE="🚀 **New release published**\n\
+            Repository: **$REPO**\n\
+            Released by: **$ACTOR**\n\
+            Release notes: $RELEASE_URL"
+          fi
+
+          if [ -n "$MESSAGE" ]; then
+            curl -X POST "$DISCORD_WEBHOOK" \
+              -H "Content-Type: application/json" \
+              -d "{\"content\":\"$MESSAGE\"}"
+          fi
