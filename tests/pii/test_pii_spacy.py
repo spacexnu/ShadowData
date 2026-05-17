@@ -1,12 +1,24 @@
 import subprocess
 import sys
+import types
 from unittest.mock import patch, MagicMock
 
 import pytest
 
-pytest.importorskip('spacy')
+if 'spacy' not in sys.modules:
+    spacy_stub = types.ModuleType('spacy')
+    spacy_language_stub = types.ModuleType('spacy.language')
 
-from spacy import Language  # noqa: E402
+    class Language:
+        pass
+
+    spacy_stub.load = MagicMock()
+    spacy_language_stub.Language = Language
+
+    sys.modules['spacy'] = spacy_stub
+    sys.modules['spacy.language'] = spacy_language_stub
+
+from spacy.language import Language  # noqa: E402
 
 from shadow_data.pii.enums import ModelLang, ModelCore, ModelSize  # noqa: E402
 from shadow_data.pii.spacy import ModelSelector, SensitiveData  # noqa: E402

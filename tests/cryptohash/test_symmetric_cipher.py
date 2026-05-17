@@ -5,6 +5,11 @@ from shadow_data.cryptohash.symmetric_cipher import Symmetric
 
 
 class TestSymmetric:
+    def test_init_with_valid_cipher_key(self):
+        key = Fernet.generate_key()
+        symmetric = Symmetric(key)
+        assert symmetric.cipher_key == key
+
     def test_create_key(self):
         symmetric = Symmetric()
         key = symmetric.create_key()
