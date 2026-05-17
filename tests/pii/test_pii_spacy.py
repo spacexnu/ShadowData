@@ -1,11 +1,15 @@
-import pytest
+import subprocess
+import sys
 from unittest.mock import patch, MagicMock
 
-from spacy import Language
+import pytest
 
-from shadow_data.pii.enums import ModelLang, ModelCore, ModelSize
-from shadow_data.pii.spacy import ModelSelector, SensitiveData
-import subprocess
+pytest.importorskip('spacy')
+
+from spacy import Language  # noqa: E402
+
+from shadow_data.pii.enums import ModelLang, ModelCore, ModelSize  # noqa: E402
+from shadow_data.pii.spacy import ModelSelector, SensitiveData  # noqa: E402
 
 
 class TestModelSelector:
@@ -53,13 +57,24 @@ class TestModelSelector:
             core = ModelCore.NEWS
             size = ModelSize.SMALL
 
-            nlp = ModelSelector.select(lang, core, size)
+            nlp = ModelSelector.select(lang, core, size, auto_download=True)
 
             mock_subprocess_run.assert_called_once_with(
-                ['python', '-m', 'spacy', 'download', 'en_core_news_sm'], check=True
+                [sys.executable, '-m', 'spacy', 'download', 'en_core_news_sm'], check=True
             )
             assert mock_spacy_load.call_count == 2
             assert isinstance(nlp, MagicMock)
+
+    def test_select_model_missing_without_auto_download(self):
+        with patch('spacy.load', side_effect=OSError), patch('subprocess.run') as mock_subprocess_run:
+            lang = ModelLang.ENGLISH
+            core = ModelCore.NEWS
+            size = ModelSize.SMALL
+
+            with pytest.raises(RuntimeError, match='is not installed'):
+                ModelSelector.select(lang, core, size)
+
+            mock_subprocess_run.assert_not_called()
 
     def test_select_model_download_failure(self):
         with patch('spacy.load', side_effect=OSError), patch(
@@ -70,10 +85,10 @@ class TestModelSelector:
             size = ModelSize.SMALL
 
             with pytest.raises(RuntimeError):
-                ModelSelector.select(lang, core, size)
+                ModelSelector.select(lang, core, size, auto_download=True)
 
             mock_subprocess_run.assert_called_once_with(
-                ['python', '-m', 'spacy', 'download', 'en_core_news_sm'], check=True
+                [sys.executable, '-m', 'spacy', 'download', 'en_core_news_sm'], check=True
             )
 
 
@@ -95,7 +110,7 @@ class TestSensitiveData:
         ]
         mock_nlp.return_value = mock_doc
 
-        monkeypatch.setattr(SensitiveData, 'set_model', lambda self, *args: mock_nlp)
+        monkeypatch.setattr(SensitiveData, 'set_model', lambda self, *args, **kwargs: mock_nlp)
         return mock_nlp
 
     @pytest.fixture
@@ -105,7 +120,7 @@ class TestSensitiveData:
         mock_doc.ents = []
         mock_nlp.return_value = mock_doc
 
-        monkeypatch.setattr(SensitiveData, 'set_model', lambda self, *args: mock_nlp)
+        monkeypatch.setattr(SensitiveData, 'set_model', lambda self, *args, **kwargs: mock_nlp)
         return mock_nlp
 
     def test_identify_sensitive_data(self, sensitive_data_instance, mock_nlp):
@@ -153,5 +168,5 @@ class TestSensitiveData:
 
             result = sensitive_data.set_model(model_lang, model_core, model_size)
 
-            model_selector_mock.select.assert_called_once_with(model_lang, model_core, model_size)
+            model_selector_mock.select.assert_called_once_with(model_lang, model_core, model_size, auto_download=False)
             assert result == expected_language

@@ -9,5 +9,5 @@ This folder provides focused guides for the current feature set.
 
 ## Quick pointers
 - PII detection is optional and requires the `shadow_data[spacy]` extra.
-- spaCy models download at runtime when first used.
+- spaCy models must be installed before use. Runtime downloads are opt-in.
 - Masking and reversible transforms are planned but not yet implemented.

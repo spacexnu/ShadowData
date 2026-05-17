@@ -36,3 +36,17 @@ class TestIdentifierAnonymizer:
         anonymizer = IdentifierAnonymizer(content)
         anonymizer.anonymize()
         assert anonymizer.cleaned_content == expected_output
+
+    def test_anonymize_ssn_with_spaces(self):
+        content = 'SSN is 123 45 6789.'
+        expected_output = 'SSN is XXX XX 6789.'
+        anonymizer = IdentifierAnonymizer(content)
+        anonymizer.anonymize()
+        assert anonymizer.cleaned_content == expected_output
+
+    def test_anonymize_compact_ssn(self):
+        content = 'SSN is 123456789.'
+        expected_output = 'SSN is XXXXX6789.'
+        anonymizer = IdentifierAnonymizer(content)
+        anonymizer.anonymize()
+        assert anonymizer.cleaned_content == expected_output

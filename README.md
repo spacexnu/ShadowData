@@ -23,7 +23,7 @@ Optional spaCy support:
 pip install shadow_data[spacy]
 ```
 
-spaCy models are downloaded automatically at runtime when needed. To install manually:
+spaCy models must be installed before use:
 
 ```bash
 python -m spacy download en_core_web_trf
@@ -57,7 +57,7 @@ symmetric = Symmetric()
 key = symmetric.create_key()
 ciphertext = symmetric.encrypt("hello")
 plaintext = symmetric.decrypt(ciphertext)
-print(key, ciphertext, plaintext)
+print(ciphertext, plaintext)
 ```
 
 ## Docs
