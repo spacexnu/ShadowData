@@ -37,3 +37,17 @@ class TestTextProcessor:
         expected_output = 'ANONYMOUS bought a car. João sold a house.'
 
         assert TextProcessor.replace_text(original_term, to_replace, original_content) == expected_output
+
+    def test_replace_text_treats_term_as_literal(self):
+        original_content = 'User a+b@example.com and user axb@example.com'
+        original_term = 'a+b@example.com'
+        to_replace = 'ANONYMOUS'
+
+        expected_output = 'User ANONYMOUS and user axb@example.com'
+
+        assert TextProcessor.replace_text(original_term, to_replace, original_content) == expected_output
+
+    def test_replace_regex_supports_patterns(self):
+        original_content = 'IDs are 123 and 456.'
+
+        assert TextProcessor.replace_regex(r'\d+', 'X', original_content) == 'IDs are X and X.'

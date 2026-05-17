@@ -13,7 +13,6 @@ key = symmetric.create_key()
 ciphertext = symmetric.encrypt("Hello World!")
 plaintext = symmetric.decrypt(ciphertext)
 
-print(key)
 print(ciphertext)
 print(plaintext)
 ```
@@ -37,3 +36,5 @@ print(plaintext)
 ## Error handling
 - `CipherKeyNotFoundError`: raised when encrypting or decrypting without a key.
 - `InvalidCipherKeyError`: raised when setting an invalid Fernet key.
+
+Do not write encryption keys to logs or console output in production systems.

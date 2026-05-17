@@ -5,6 +5,8 @@ from typing import Optional
 
 class Symmetric:
     def __init__(self, cipher_key: Optional[bytes] = None):
+        if cipher_key is not None:
+            self._validate_cipher_key(cipher_key)
         self._cipher_key = cipher_key
 
     def create_key(self) -> bytes:

@@ -1,5 +1,6 @@
 import spacy
 import subprocess
+import sys
 
 from spacy.language import Language
 
@@ -8,7 +9,7 @@ from shadow_data.pii.enums import ModelLang, ModelCore, ModelSize
 
 class ModelSelector:
     @staticmethod
-    def select(lang: ModelLang, core: ModelCore, size: ModelSize) -> Language:
+    def select(lang: ModelLang, core: ModelCore, size: ModelSize, auto_download: bool = False) -> Language:
         """
         Loads a spaCy model by combining language, core news, and size.
 
@@ -34,8 +35,13 @@ class ModelSelector:
         try:
             nlp = spacy.load(model_name)
         except OSError:
+            if not auto_download:
+                raise RuntimeError(
+                    f'Model {model_name} is not installed. Install it with: '
+                    f'{sys.executable} -m spacy download {model_name}'
+                )
             try:
-                subprocess.run(['python', '-m', 'spacy', 'download', model_name], check=True)
+                subprocess.run([sys.executable, '-m', 'spacy', 'download', model_name], check=True)
                 nlp = spacy.load(model_name)
             except subprocess.CalledProcessError:
                 raise RuntimeError(f'Could not download and load model {model_name}')
@@ -43,14 +49,16 @@ class ModelSelector:
 
 
 class SensitiveData:
-    def set_model(self, model_lang: ModelLang, model_core: ModelCore, model_size: ModelSize) -> Language:
+    def set_model(
+        self, model_lang: ModelLang, model_core: ModelCore, model_size: ModelSize, auto_download: bool = False
+    ) -> Language:
         model_selector = ModelSelector()
-        return model_selector.select(model_lang, model_core, model_size)
+        return model_selector.select(model_lang, model_core, model_size, auto_download=auto_download)
 
     def identify_sensitive_data(
-        self, model_lang: ModelLang, model_core: ModelCore, model_size: ModelSize, content
+        self, model_lang: ModelLang, model_core: ModelCore, model_size: ModelSize, content, auto_download: bool = False
     ) -> list:
-        nlp = self.set_model(model_lang, model_core, model_size)
+        nlp = self.set_model(model_lang, model_core, model_size, auto_download=auto_download)
         doc = nlp(content)
 
         sensitive_data = []

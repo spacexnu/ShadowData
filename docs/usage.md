@@ -3,7 +3,7 @@
 This guide covers the anonymization helpers and localized identifiers.
 
 ## Text replacement
-`TextProcessor.replace_text` uses regular expressions for matching and replacement.
+`TextProcessor.replace_text` treats the search term as literal text. Use `TextProcessor.replace_regex` when a regular expression is required.
 
 ```python
 from shadow_data.anonymization import TextProcessor

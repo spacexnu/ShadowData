@@ -27,5 +27,5 @@ print(entities)
 
 ## Notes
 - The model name is assembled as `{lang}_{core}_{size}` (for example, `en_core_web_sm`).
-- Models are downloaded automatically on first use if missing.
+- Models must be installed before use. Pass `auto_download=True` only in trusted setup flows where runtime package installation is acceptable.
 - Returned entities are filtered to these labels: `PER`, `LOC`, `ORG`, `MISC`.

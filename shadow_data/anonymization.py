@@ -6,13 +6,17 @@ from shadow_data.exceptions import InvalidEmailError
 class TextProcessor:
     @staticmethod
     def replace_text(original_term: str, to_replace: str, original_content: str) -> str:
-        return re.sub(original_term, to_replace, original_content)
+        return re.sub(re.escape(original_term), lambda _: to_replace, original_content)
+
+    @staticmethod
+    def replace_regex(pattern: str, to_replace: str, original_content: str) -> str:
+        return re.sub(pattern, to_replace, original_content)
 
 
 class Ipv4Anonymization:
     @staticmethod
     def anonymize_ipv4(text: str, pattern: str = r'\1.X.X.X') -> str:
-        return TextProcessor.replace_text(r'\b(\d{1,3})(\.\d{1,3}){3}\b', pattern, text)
+        return TextProcessor.replace_regex(r'\b(\d{1,3})(\.\d{1,3}){3}\b', pattern, text)
 
 
 class EmailAnonymization:
