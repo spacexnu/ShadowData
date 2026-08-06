@@ -6,12 +6,14 @@ A Python library for anonymizing, masking, and encrypting sensitive data with a 
 ## What it does today
 - Text and pattern anonymization (free-form text replacement, IPv4, email, phone)
 - Localized identifiers (US SSN, Brazil CPF/CNPJ)
+- Format-preserving masking (credit cards with Luhn validation, digits, partial email)
+- Reversible and deterministic pseudonymization
 - Symmetric encryption and decryption (Fernet)
 - PII detection via spaCy (optional extra)
 
-Planned: richer masking helpers and reversible transforms.
-
 ## Installation
+
+Requires Python 3.10 or newer.
 
 ```bash
 pip install shadow_data
@@ -39,23 +41,30 @@ from shadow_data.anonymization import (
     TextProcessor,
 )
 from shadow_data.cryptohash.symmetric_cipher import Symmetric
-from shadow_data.l10n.usa import IdentifierAnonymizer
+from shadow_data.l10n.usa import UsaIdentifierAnonymizer
+from shadow_data.masking import mask_credit_card, partial_email
+from shadow_data.reversible import Pseudonymizer
 
-text = "Contact me at user@example.com or 415-555-0199. Server: 10.0.0.1"
+text = 'Contact me at user@example.com or 415-555-0199. Server: 10.0.0.1'
 anonymized_text = Ipv4Anonymization.anonymize_ipv4(text)
-anonymized_text = TextProcessor.replace_text("Contact", "Reach", anonymized_text)
-email = EmailAnonymization.anonymize_email("user@example.com")
-phone = PhoneNumberAnonymization.anonymize_phone_number("415-555-0199")
+anonymized_text = TextProcessor.replace_text('Contact', 'Reach', anonymized_text)
+email = EmailAnonymization.anonymize_email('user@example.com')
+phone = PhoneNumberAnonymization.anonymize_phone_number('415-555-0199')
 print(anonymized_text, email, phone)
 
 ssn = "Billy's SSN is 479-92-5042."
-ssn_anonymizer = IdentifierAnonymizer(ssn)
-ssn_anonymizer.anonymize()
-print(ssn_anonymizer.cleaned_content)
+print(UsaIdentifierAnonymizer(ssn).anonymize())
+
+print(mask_credit_card('4111 1111 1111 1111'))  # **** **** **** 1111
+print(partial_email('user@example.com'))  # u***@e******.com
+
+pseudonymizer = Pseudonymizer()
+token = pseudonymizer.pseudonymize('user@example.com')
+print(token, pseudonymizer.depseudonymize(token))
 
 symmetric = Symmetric()
 key = symmetric.create_key()
-ciphertext = symmetric.encrypt("hello")
+ciphertext = symmetric.encrypt('hello')
 plaintext = symmetric.decrypt(ciphertext)
 print(ciphertext, plaintext)
 ```
@@ -63,6 +72,8 @@ print(ciphertext, plaintext)
 ## Docs
 - `docs/README.md`
 - `docs/usage.md`
+- `docs/masking.md`
+- `docs/reversible.md`
 - `docs/cryptography.md`
 - `docs/pii.md`
 
@@ -71,14 +82,22 @@ print(ciphertext, plaintext)
 - `examples/anonymization.md`
 - `examples/i10n_us.md`
 - `examples/i10n_brazil.md`
+- `examples/masking.md`
+- `examples/reversible.md`
 - `examples/pii_nlp.md`
 - `examples/symmetric_cipher.md`
 
-## Testing
+## Development
 
 ```bash
-poetry run pytest -vvv
+poetry install --with dev --extras spacy
+make all   # ruff check, ruff format --check, mypy, pytest with coverage
 ```
+
+Individual targets: `make test`, `make coverage`, `make check`, `make format`, `make typecheck`.
+
+## Changelog
+See `CHANGELOG.md`.
 
 ## Contributing
 
