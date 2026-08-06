@@ -1,4 +1,5 @@
 import pytest
+
 from shadow_data.l10n.ClearIdentifier import ClearIdentifier
 
 

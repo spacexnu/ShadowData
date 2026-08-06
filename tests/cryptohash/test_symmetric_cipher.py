@@ -1,7 +1,8 @@
 import pytest
 from cryptography.fernet import Fernet, InvalidToken
-from shadow_data.exceptions import CipherKeyNotFoundError, InvalidCipherKeyError
+
 from shadow_data.cryptohash.symmetric_cipher import Symmetric
+from shadow_data.exceptions import CipherKeyNotFoundError, InvalidCipherKeyError
 
 
 class TestSymmetric:

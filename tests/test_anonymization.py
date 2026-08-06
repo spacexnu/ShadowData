@@ -1,4 +1,4 @@
-from shadow_data.anonymization import TextProcessor, Ipv4Anonymization
+from shadow_data.anonymization import Ipv4Anonymization, TextProcessor
 
 
 def test_anonymize_single_term():

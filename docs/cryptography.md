@@ -10,7 +10,7 @@ from shadow_data.cryptohash.symmetric_cipher import Symmetric
 symmetric = Symmetric()
 key = symmetric.create_key()
 
-ciphertext = symmetric.encrypt("Hello World!")
+ciphertext = symmetric.encrypt('Hello World!')
 plaintext = symmetric.decrypt(ciphertext)
 
 print(ciphertext)
@@ -22,11 +22,11 @@ print(plaintext)
 ```python
 from shadow_data.cryptohash.symmetric_cipher import Symmetric
 
-key = b"bpSGcODTJ1iOwxloIQJrAiYDRaqyypdCsQfg1EwVOTc="
+key = b'bpSGcODTJ1iOwxloIQJrAiYDRaqyypdCsQfg1EwVOTc='
 
 symmetric = Symmetric(cipher_key=key)
 
-ciphertext = symmetric.encrypt("Hello World")
+ciphertext = symmetric.encrypt('Hello World')
 plaintext = symmetric.decrypt(ciphertext)
 
 print(ciphertext)

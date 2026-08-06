@@ -1,10 +1,10 @@
 from cryptography.fernet import Fernet, InvalidToken
+
 from shadow_data.exceptions import CipherKeyNotFoundError, InvalidCipherKeyError
-from typing import Optional
 
 
 class Symmetric:
-    def __init__(self, cipher_key: Optional[bytes] = None):
+    def __init__(self, cipher_key: bytes | None = None):
         if cipher_key is not None:
             self._validate_cipher_key(cipher_key)
         self._cipher_key = cipher_key
@@ -14,11 +14,11 @@ class Symmetric:
         return self._cipher_key
 
     @property
-    def cipher_key(self) -> Optional[bytes]:
+    def cipher_key(self) -> bytes | None:
         return self._cipher_key
 
     @cipher_key.setter
-    def cipher_key(self, key: bytes):
+    def cipher_key(self, key: bytes) -> None:
         self._validate_cipher_key(key)
         self._cipher_key = key
 
@@ -31,15 +31,15 @@ class Symmetric:
         return fernet.decrypt(ciphertext).decode()
 
     def _get_fernet_instance(self) -> Fernet:
-        self._check_cipher_key()
-        return Fernet(self._cipher_key)
+        return Fernet(self._check_cipher_key())
 
-    def _check_cipher_key(self):
+    def _check_cipher_key(self) -> bytes:
         if not self._cipher_key:
             raise CipherKeyNotFoundError()
+        return self._cipher_key
 
-    def _validate_cipher_key(self, key: bytes):
+    def _validate_cipher_key(self, key: bytes) -> None:
         try:
             Fernet(key)
-        except (ValueError, InvalidToken):
-            raise InvalidCipherKeyError()
+        except (ValueError, InvalidToken) as error:
+            raise InvalidCipherKeyError() from error

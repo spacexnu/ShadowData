@@ -7,16 +7,17 @@ This simple encryption and decryption method uses symmetric cryptography. Users 
 
 ```python
 from shadow_data.cryptohash.symmetric_cipher import Symmetric
+
 symmetric = Symmetric()
-key = symmetric.create_key() # Generate a new key. It can be saved at a safe place to be used later
+key = symmetric.create_key()  # Generate a new key. It can be saved at a safe place to be used later
 
 
-content = "Hello World!"
+content = 'Hello World!'
 encrypted_content = symmetric.encrypt(content)
-print(f"Encrypted: {encrypted_content}")
+print(f'Encrypted: {encrypted_content}')
 
 decrypted_content = symmetric.decrypt(encrypted_content)
-print(f"Decrypted: {decrypted_content}")
+print(f'Decrypted: {decrypted_content}')
 ```
 ### Results
 ```plain
@@ -28,15 +29,15 @@ Decrypted: Hello World!
 
 ```python
 from shadow_data.cryptohash.symmetric_cipher import Symmetric
+
 key = b'bpSGcODTJ1iOwxloIQJrAiYDRaqyypdCsQfg1EwVOTc='
 symmetric = Symmetric()
 symmetric.cipher_key = key
-content = "Hello World"
+content = 'Hello World'
 encrypted = symmetric.encrypt(content)
 decrypted = symmetric.decrypt(encrypted)
-print(f"Encrypted: {encrypted}")
-print(f"Decrypted: {decrypted}")
-
+print(f'Encrypted: {encrypted}')
+print(f'Decrypted: {decrypted}')
 ```
 
 ### Results:
