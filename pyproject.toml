@@ -7,7 +7,7 @@ authors = ["Adler Medrado <adler@adlermedrado.com.br>"]
 license = "MIT"
 homepage = "https://github.com/spacexnu/ShadowData"
 repository = "https://github.com/spacexnu/ShadowData"
-documentation = "https://github.com/spacexnu/ShadowData/blob/main/docs/README.md"
+documentation = "https://spacexnu.github.io/ShadowData/"
 keywords = ["anonymization", "masking", "pii", "privacy", "gdpr", "lgpd", "encryption"]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
