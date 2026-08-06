@@ -1,15 +1,20 @@
 ![Build Status](https://github.com/spacexnu/ShadowData/actions/workflows/main.yml/badge.svg)
 
 # ShadowData
-A Python library for anonymizing, masking, and encrypting sensitive data with a small, focused API.
 
-## What it does today
-- Text and pattern anonymization (free-form text replacement, IPv4, email, phone)
-- Localized identifiers (US SSN, Brazil CPF/CNPJ)
-- Format-preserving masking (credit cards with Luhn validation, digits, partial email)
-- Reversible and deterministic pseudonymization
-- Symmetric encryption and decryption (Fernet)
-- PII detection via spaCy (optional extra)
+A Python library for anonymizing, masking, and encrypting sensitive data with a small,
+focused API.
+
+📖 **[Documentation](https://spacexnu.github.io/ShadowData/)**
+
+## Features
+
+- **Anonymization** — free-form text, IPv4 addresses, emails, phone numbers
+- **Localized identifiers** — US SSN, Brazil CPF/CNPJ
+- **Masking** — credit cards with Luhn validation, formatted identifiers, partial emails
+- **Pseudonymization** — reversible tokens, plus deterministic tokens for joins
+- **Encryption** — symmetric encryption and decryption via Fernet
+- **PII detection** — named entity recognition with spaCy (optional extra)
 
 ## Installation
 
@@ -19,93 +24,49 @@ Requires Python 3.10 or newer.
 pip install shadow_data
 ```
 
-Optional spaCy support:
+With PII detection:
 
 ```bash
-pip install shadow_data[spacy]
-```
-
-spaCy models must be installed before use:
-
-```bash
-python -m spacy download en_core_web_trf
+pip install "shadow_data[spacy]"
+python -m spacy download en_core_web_sm
 ```
 
 ## Quickstart
 
 ```python
-from shadow_data.anonymization import (
+from shadow_data import (
     EmailAnonymization,
-    Ipv4Anonymization,
-    PhoneNumberAnonymization,
-    TextProcessor,
+    Pseudonymizer,
+    UsaIdentifierAnonymizer,
+    mask_credit_card,
 )
-from shadow_data.cryptohash.symmetric_cipher import Symmetric
-from shadow_data.l10n.usa import UsaIdentifierAnonymizer
-from shadow_data.masking import mask_credit_card, partial_email
-from shadow_data.reversible import Pseudonymizer
 
-text = 'Contact me at user@example.com or 415-555-0199. Server: 10.0.0.1'
-anonymized_text = Ipv4Anonymization.anonymize_ipv4(text)
-anonymized_text = TextProcessor.replace_text('Contact', 'Reach', anonymized_text)
-email = EmailAnonymization.anonymize_email('user@example.com')
-phone = PhoneNumberAnonymization.anonymize_phone_number('415-555-0199')
-print(anonymized_text, email, phone)
-
-ssn = "Billy's SSN is 479-92-5042."
-print(UsaIdentifierAnonymizer(ssn).anonymize())
-
-print(mask_credit_card('4111 1111 1111 1111'))  # **** **** **** 1111
-print(partial_email('user@example.com'))  # u***@e******.com
+EmailAnonymization.anonymize_email('user@example.com')  # '****@****ple.com'
+UsaIdentifierAnonymizer('SSN: 479-92-5042').anonymize()  # 'SSN: XXX-XX-5042'
+mask_credit_card('4111 1111 1111 1111')  # '**** **** **** 1111'
 
 pseudonymizer = Pseudonymizer()
 token = pseudonymizer.pseudonymize('user@example.com')
-print(token, pseudonymizer.depseudonymize(token))
-
-symmetric = Symmetric()
-key = symmetric.create_key()
-ciphertext = symmetric.encrypt('hello')
-plaintext = symmetric.decrypt(ciphertext)
-print(ciphertext, plaintext)
+pseudonymizer.depseudonymize(token)  # 'user@example.com'
 ```
 
-## Docs
-- `docs/README.md`
-- `docs/usage.md`
-- `docs/masking.md`
-- `docs/reversible.md`
-- `docs/cryptography.md`
-- `docs/pii.md`
-
-## Examples
-- `examples/quickstart.py`
-- `examples/anonymization.md`
-- `examples/i10n_us.md`
-- `examples/i10n_brazil.md`
-- `examples/masking.md`
-- `examples/reversible.md`
-- `examples/pii_nlp.md`
-- `examples/symmetric_cipher.md`
+See [Getting started](https://spacexnu.github.io/ShadowData/getting-started/) for a full
+tour, and [Choosing a technique](https://spacexnu.github.io/ShadowData/guide/choosing/) if
+you are unsure which helper fits your case.
 
 ## Development
 
 ```bash
-poetry install --with dev --extras spacy
-make all   # ruff check, ruff format --check, mypy, pytest with coverage
+poetry install --with dev,docs --extras spacy
+make all   # ruff, mypy, docs build, and pytest with coverage
 ```
 
-Individual targets: `make test`, `make coverage`, `make check`, `make format`, `make typecheck`.
+See [Contributing](https://spacexnu.github.io/ShadowData/contributing/).
 
 ## Changelog
-See `CHANGELOG.md`.
 
-## Contributing
-
-1. Fork the repository.
-2. Create a new branch for your feature (`git checkout -b my-new-feature`).
-3. Commit your changes (`git commit -am 'Add new feature'`).
-4. Push the branch (`git push origin my-new-feature`).
-5. Open a pull request.
+See [CHANGELOG.md](CHANGELOG.md).
 
 ## License
-This project is licensed under the MIT License - see `LICENSE` for details.
+
+MIT — see [LICENSE](LICENSE).

@@ -31,6 +31,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   spaCy integration is deliberately left out so that importing `shadow_data` never
   requires the extra.
 - `py.typed` marker, so type checkers use the annotations the package already ships.
+- A documentation site built with MkDocs and Material for MkDocs, consolidating the
+  previous `docs/` guides and `examples/*.md` files into a single structured site with a
+  guide, an API reference, and a page on choosing between the techniques. Built with
+  `--strict` in CI, so broken internal links fail the build.
 - `CHANGELOG.md`, plus PyPI metadata (repository, documentation, keywords, classifiers).
 - `publish.yml` workflow releasing to PyPI on GitHub release via trusted publishing (OIDC),
   with a guard that the tag matches the version in `pyproject.toml`.
