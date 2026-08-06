@@ -1,13 +1,29 @@
 [tool.poetry]
 name = "shadow_data"
-version = "0.4.1"
+version = "1.0.1"
 description = "A sensitive data handler python library"
 readme = "README.md"
 authors = ["Adler Medrado <adler@adlermedrado.com.br>"]
 license = "MIT"
+homepage = "https://github.com/spacexnu/ShadowData"
+repository = "https://github.com/spacexnu/ShadowData"
+documentation = "https://spacexnu.github.io/ShadowData/"
+keywords = ["anonymization", "masking", "pii", "privacy", "gdpr", "lgpd", "encryption"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Topic :: Security",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Typing :: Typed",
+]
+packages = [{ include = "shadow_data" }]
+
+[tool.poetry.urls]
+Changelog = "https://github.com/spacexnu/ShadowData/blob/main/CHANGELOG.md"
+Issues = "https://github.com/spacexnu/ShadowData/issues"
 
 [tool.poetry.dependencies]
-python = "^3.12"
+python = "^3.10"
 
 spacy = { version = "^3.8", optional = true, markers = "platform_system == 'Darwin' and platform_machine == 'arm64' or platform_system == 'Darwin' and platform_machine == 'x86_64' or platform_system == 'Linux' or platform_system == 'Windows'" }
 cryptography = "^44.0.3"
@@ -16,9 +32,14 @@ cryptography = "^44.0.3"
 spacy = ["spacy"]
 
 [tool.poetry.group.dev.dependencies]
-ruff = "^0.6.8"
+ruff = "^0.16.1"
 pytest = "^8.3.3"
-pytest-cov = "^5.0.0"
+pytest-cov = "^7.0"
+mypy = "^1.18"
+
+
+[tool.poetry.group.docs.dependencies]
+mkdocs-material = "^9.7.7"
 
 [build-system]
 requires = ["poetry-core>=1.9.0"]
@@ -26,9 +47,34 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.ruff]
 line-length = 120
+target-version = "py310"
 
 [tool.ruff.format]
 quote-style = "single"
 
+[tool.ruff.lint]
+# S is flake8-bandit: appropriate for a library whose job is handling sensitive data.
+select = ["E", "F", "I", "UP", "B", "S"]
+
 [tool.ruff.lint.isort]
 case-sensitive = true
+
+[tool.ruff.lint.per-file-ignores]
+# Tests rely on assert, and the example scripts are documentation, not production code.
+"tests/**" = ["S101"]
+
+[tool.mypy]
+python_version = "3.10"
+files = ["shadow_data"]
+strict = true
+
+[[tool.mypy.overrides]]
+module = ["spacy.*"]
+ignore_missing_imports = true
+
+[tool.coverage.run]
+source = ["shadow_data"]
+
+[tool.pytest.ini_options]
+addopts = "-v --maxfail=3 --disable-warnings"
+testpaths = ["tests"]

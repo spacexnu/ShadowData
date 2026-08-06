@@ -1,7 +1,14 @@
-from shadow_data.l10n.usa import IdentifierAnonymizer
+from shadow_data.l10n.usa import IdentifierAnonymizer, UsaIdentifierAnonymizer
 
 
 class TestIdentifierAnonymizer:
+    def test_anonymize_returns_the_cleaned_content(self):
+        anonymizer = UsaIdentifierAnonymizer('My SSN is 123-45-6789.')
+        assert anonymizer.anonymize() == 'My SSN is XXX-XX-6789.'
+
+    def test_deprecated_alias_points_to_the_same_class(self):
+        assert IdentifierAnonymizer is UsaIdentifierAnonymizer
+
     def test_anonymize_ssn(self):
         content = 'My SSN is 123-45-6789.'
         expected_output = 'My SSN is XXX-XX-6789.'

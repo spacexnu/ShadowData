@@ -18,8 +18,19 @@ class TestPhoneNumberAnonymization:
             ('+91 22 123 4567', '+** ** *** 4567'),
             ('+551199998877', '+********8877'),
             ('1199998877', '******8877'),
-            ('1234', '1234'),
         ],
     )
     def test_anonymize_phone_number(self, phone, expected):
+        assert PhoneNumberAnonymization.anonymize_phone_number(phone) == expected
+
+    @pytest.mark.parametrize(
+        'phone, expected',
+        [
+            ('1234', '****'),
+            ('123', '***'),
+            ('12-34', '**-**'),
+            ('', ''),
+        ],
+    )
+    def test_short_numbers_are_fully_masked(self, phone, expected):
         assert PhoneNumberAnonymization.anonymize_phone_number(phone) == expected

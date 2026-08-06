@@ -1,7 +1,7 @@
 import subprocess
 import sys
 import types
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -20,7 +20,7 @@ if 'spacy' not in sys.modules:
 
 from spacy.language import Language  # noqa: E402
 
-from shadow_data.pii.enums import ModelLang, ModelCore, ModelSize  # noqa: E402
+from shadow_data.pii.enums import ModelCore, ModelLang, ModelSize  # noqa: E402
 from shadow_data.pii.spacy import ModelSelector, SensitiveData  # noqa: E402
 
 
@@ -89,9 +89,10 @@ class TestModelSelector:
             mock_subprocess_run.assert_not_called()
 
     def test_select_model_download_failure(self):
-        with patch('spacy.load', side_effect=OSError), patch(
-            'subprocess.run', side_effect=subprocess.CalledProcessError(1, 'cmd')
-        ) as mock_subprocess_run:
+        with (
+            patch('spacy.load', side_effect=OSError),
+            patch('subprocess.run', side_effect=subprocess.CalledProcessError(1, 'cmd')) as mock_subprocess_run,
+        ):
             lang = ModelLang.ENGLISH
             core = ModelCore.NEWS
             size = ModelSize.SMALL
@@ -165,6 +166,67 @@ class TestSensitiveData:
             ModelLang.ENGLISH, ModelCore.NEWS, ModelSize.SMALL, content
         )
         assert result == expected_output
+
+    @pytest.fixture
+    def mock_ontonotes_nlp(self, monkeypatch):
+        mock_nlp = MagicMock()
+        mock_doc = MagicMock()
+        mock_doc.ents = [
+            MagicMock(text='John Doe', label_='PERSON'),
+            MagicMock(text='New York', label_='GPE'),
+            MagicMock(text='Acme Corp', label_='ORG'),
+            MagicMock(text='Golden Gate', label_='FAC'),
+            MagicMock(text='Brazilian', label_='NORP'),
+            MagicMock(text='42', label_='CARDINAL'),
+        ]
+        mock_nlp.return_value = mock_doc
+
+        monkeypatch.setattr(SensitiveData, 'set_model', lambda self, *args, **kwargs: mock_nlp)
+        return mock_nlp
+
+    def test_identify_sensitive_data_with_ontonotes_labels(self, sensitive_data_instance, mock_ontonotes_nlp):
+        # The English `core_web` pipelines emit PERSON/GPE/FAC/NORP rather than
+        # the PER/LOC/MISC labels used by the news pipelines.
+        result = sensitive_data_instance.identify_sensitive_data(
+            ModelLang.ENGLISH, ModelCore.WEB, ModelSize.SMALL, 'John Doe lives in New York.'
+        )
+
+        assert result == [
+            ('John Doe', 'PERSON'),
+            ('New York', 'GPE'),
+            ('Acme Corp', 'ORG'),
+            ('Golden Gate', 'FAC'),
+            ('Brazilian', 'NORP'),
+        ]
+
+    def test_identify_sensitive_data_with_custom_labels(self, sensitive_data_instance, mock_ontonotes_nlp):
+        result = sensitive_data_instance.identify_sensitive_data(
+            ModelLang.ENGLISH, ModelCore.WEB, ModelSize.SMALL, 'John Doe', labels={'PERSON'}
+        )
+
+        assert result == [('John Doe', 'PERSON')]
+
+    def test_model_is_loaded_only_once_per_combination(self, sensitive_data_instance):
+        model_selector_mock = MagicMock(spec=ModelSelector)
+        model_selector_mock.select.return_value = MagicMock()
+
+        with patch('shadow_data.pii.spacy.ModelSelector', return_value=model_selector_mock):
+            first = sensitive_data_instance.set_model(ModelLang.ENGLISH, ModelCore.NEWS, ModelSize.SMALL)
+            second = sensitive_data_instance.set_model(ModelLang.ENGLISH, ModelCore.NEWS, ModelSize.SMALL)
+
+            assert first is second
+            assert model_selector_mock.select.call_count == 1
+
+    def test_different_model_combinations_are_cached_separately(self, sensitive_data_instance):
+        model_selector_mock = MagicMock(spec=ModelSelector)
+        model_selector_mock.select.side_effect = [MagicMock(), MagicMock()]
+
+        with patch('shadow_data.pii.spacy.ModelSelector', return_value=model_selector_mock):
+            first = sensitive_data_instance.set_model(ModelLang.ENGLISH, ModelCore.NEWS, ModelSize.SMALL)
+            second = sensitive_data_instance.set_model(ModelLang.PORTUGUESE, ModelCore.NEWS, ModelSize.SMALL)
+
+            assert first is not second
+            assert model_selector_mock.select.call_count == 2
 
     def test_set_model(self):
         model_lang = ModelLang.PORTUGUESE
