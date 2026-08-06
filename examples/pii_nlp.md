@@ -6,7 +6,10 @@ spaCy is an open-source library for advanced natural language processing (NLP) i
 
 This library primarily uses spaCy to process text and identify personally identifiable information (PII).
 
-**_The code sample below is in Portuguese because the results were better than those from the tests I conducted in English._**
+**_The code sample below is in Portuguese._** Until 1.1 the English pipelines appeared to
+find far less: the entity filter only accepted the `PER`/`LOC`/`MISC` labels used by the
+`core_news` models, so the `PERSON`/`GPE` entities emitted by `en_core_web_*` were
+discarded. Both schemes are now accepted by default.
 
 ```python 
 from shadow_data.pii.enums import ModelLang, ModelCore, ModelSize
