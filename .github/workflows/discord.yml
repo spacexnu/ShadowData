@@ -9,10 +9,13 @@ on:
 jobs:
   notify:
     runs-on: ubuntu-latest
+    env:
+      DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+
     steps:
       - name: Send notification to Discord
+        if: env.DISCORD_WEBHOOK != ''
         env:
-          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
           EVENT_NAME: ${{ github.event_name }}
           ACTION: ${{ github.event.action }}
           REPO: ${{ github.repository }}
